@@ -73,7 +73,7 @@ export default function HostedZoneDetailsPage() {
     <div className="flex flex-col w-full">
       <div className="flex items-center justify-between py-space-xs mb-space-sm text-body-sm font-body-sm text-tertiary">
         <div className="flex items-center gap-space-xs text-body-sm font-body-sm">
-          <Link className="text-secondary hover:underline" href="#">Amazon Route 53</Link>
+          <Link className="text-secondary hover:underline" href="/dashboard">Amazon Route 53</Link>
           <span className="text-tertiary-fixed-dim">/</span>
           <Link className="text-secondary hover:underline" href="/hosted-zones">Hosted zones</Link>
           <span className="text-tertiary-fixed-dim">/</span>
@@ -201,8 +201,8 @@ export default function HostedZoneDetailsPage() {
 
           <RecordTable 
             records={filteredRecords} 
-            selectedRecordIds={selectedRecordIds as any} 
-            onSelectionChange={setSelectedRecordIds as any} 
+            selectedRecordIds={selectedRecordIds} 
+            onSelectionChange={setSelectedRecordIds} 
             loading={loading}
           />
           

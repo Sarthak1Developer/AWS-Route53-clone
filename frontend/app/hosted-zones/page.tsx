@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { getHostedZones, HostedZone, deleteHostedZone } from "@/lib/api";
 import HostedZoneTable from "@/components/hosted-zones/HostedZoneTable";
 import HostedZoneForm from "@/components/hosted-zones/HostedZoneForm";
@@ -66,7 +67,7 @@ export default function HostedZonesPage() {
   return (
     <div className="flex flex-col w-full">
       <nav aria-label="Breadcrumbs" className="flex items-center gap-space-xs text-body-sm font-body-sm text-tertiary mb-space-sm">
-        <a className="text-secondary hover:underline" href="#">Amazon Route 53</a>
+        <Link className="text-secondary hover:underline" href="/dashboard">Amazon Route 53</Link>
         <span className="text-tertiary-container select-none">/</span>
         <span className="text-on-surface font-title-md text-title-md">Hosted zones</span>
       </nav>
