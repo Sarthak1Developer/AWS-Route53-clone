@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database.database import engine, Base
 from app.models import User, HostedZone, DNSRecord
+from app.api.router import api_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,6 +17,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(api_router, prefix="/api")
+
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to AWS Route53 Clone API"}
+    return {"message": "Welcome to AWS Route53 Clone"}
