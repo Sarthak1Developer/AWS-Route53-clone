@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useConsole } from "./ConsoleContext";
 import ConsolePreferencesModal from "./ConsolePreferencesModal";
+import InstallAppModal from "./InstallAppModal";
 import { getHostedZones, HostedZone } from "@/lib/api";
 
 interface NotificationItem {
@@ -54,6 +55,11 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
+  // PWA Install States
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(false);
+
   // Search
   const [searchQuery, setSearchQuery] = useState("");
   const [serviceFilter, setServiceFilter] = useState("");
@@ -84,6 +90,31 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
 
   useEffect(() => {
     getHostedZones().then(setZones).catch(console.error);
+
+    // Check if already in standalone display mode
+    if (typeof window !== "undefined") {
+      if (window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone) {
+        setIsInstalled(true);
+      }
+    }
+
+    const installHandler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    const appInstalledHandler = () => {
+      setIsInstalled(true);
+      setDeferredPrompt(null);
+    };
+
+    window.addEventListener("beforeinstallprompt", installHandler);
+    window.addEventListener("appinstalled", appInstalledHandler);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", installHandler);
+      window.removeEventListener("appinstalled", appInstalledHandler);
+    };
   }, []);
 
   // Keyboard shortcut Alt+S or / to focus search
@@ -111,6 +142,19 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
   const handleLogout = () => {
     document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     window.location.href = "/login";
+  };
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        setIsInstalled(true);
+        setDeferredPrompt(null);
+      }
+    } else {
+      setIsInstallModalOpen(true);
+    }
   };
 
   const markAllNotificationsRead = () => {
@@ -144,11 +188,11 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
     <>
       <header className="fixed top-0 left-0 right-0 z-50 h-nav-height bg-on-tertiary-container border-b border-tertiary text-on-tertiary flex items-center justify-between px-2 sm:px-4 select-none">
         {/* Left Section: Mobile Menu + AWS Logo + Services Dropdown */}
-        <div className="flex items-center gap-1 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           {!isAuthPage && (
             <button
               onClick={toggleSidebar}
-              className="lg:hidden p-1.5 text-white hover:text-primary-fixed rounded transition-colors"
+              className="lg:hidden p-1.5 text-white hover:text-primary-fixed rounded transition-colors cursor-pointer"
               title="Toggle Navigation Menu"
               aria-label="Toggle Navigation Menu"
             >
@@ -177,7 +221,7 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
                   setIsRegionOpen(false);
                   setIsAccountOpen(false);
                 }}
-                className={`flex items-center gap-1 text-white hover:text-primary-fixed text-label-sm font-label-sm px-2 py-1 rounded transition-colors ${
+                className={`flex items-center gap-1 text-white hover:text-primary-fixed text-label-sm font-label-sm px-2 py-1 rounded transition-colors cursor-pointer ${
                   isServicesOpen ? "bg-[#1b2533] text-primary-fixed ring-1 ring-tertiary" : ""
                 }`}
               >
@@ -250,7 +294,7 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
               </span>
               <input
                 ref={searchInputRef}
-                className="w-full h-7 pl-7 pr-14 sm:pr-16 bg-on-tertiary-fixed text-white placeholder:text-tertiary text-body-sm font-body-sm rounded border border-tertiary focus:outline-none focus:border-secondary-container text-xs"
+                className="w-full h-7 pl-7 pr-14 sm:pr-16 bg-[#161f2e] text-white placeholder:text-gray-400 text-body-sm font-body-sm rounded border border-gray-600 focus:outline-none focus:border-secondary-container text-xs"
                 placeholder="Search services, hosted zones, and docs..."
                 type="text"
                 value={searchQuery}
@@ -329,13 +373,28 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
           </div>
         )}
 
-        {/* Right Section: CloudShell + Notifications + Region + Account + Settings + Logout */}
+        {/* Right Section: Install Pill + CloudShell + Notifications + Region + Account + Settings + Logout */}
         {!isAuthPage && (
-          <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+            {/* Install Web App Pill Button (matching Image 3) */}
+            {!isInstalled && (
+              <button
+                onClick={handleInstallClick}
+                className="flex items-center gap-1.5 h-6.5 px-3 rounded-full bg-[#c2e7ff] hover:bg-[#b3dcfb] active:bg-[#9eccf8] text-[#001d35] dark:bg-[#004a77] dark:hover:bg-[#005c94] dark:text-[#c2e7ff] text-xs font-semibold shadow-xs transition-all cursor-pointer shrink-0"
+                title="Install AWS Route 53 Web App"
+              >
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                  <rect x="2" y="3" width="20" height="14" rx="2" />
+                  <path d="M8 21h8M12 17v4M12 6.5v6.5m-3-3l3 3 3-3" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span className="font-bold tracking-tight">Install</span>
+              </button>
+            )}
+
             {/* CloudShell Button */}
             <button
               onClick={toggleCloudShell}
-              className="h-7 px-1.5 sm:px-2 flex items-center justify-center text-white hover:text-primary-fixed transition-colors rounded hover:bg-white/10"
+              className="h-7 px-1.5 sm:px-2 flex items-center justify-center text-white hover:text-primary-fixed transition-colors rounded hover:bg-white/10 cursor-pointer"
               title="AWS CloudShell (CLI)"
               aria-label="Toggle AWS CloudShell Terminal"
             >
@@ -352,7 +411,7 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
                   setIsRegionOpen(false);
                   setIsAccountOpen(false);
                 }}
-                className="relative h-7 px-1.5 sm:px-2 flex items-center justify-center text-white hover:text-primary-fixed transition-colors rounded hover:bg-white/10"
+                className="relative h-7 px-1.5 sm:px-2 flex items-center justify-center text-white hover:text-primary-fixed transition-colors rounded hover:bg-white/10 cursor-pointer"
                 title="Notifications"
                 aria-label="View notifications"
               >
@@ -375,13 +434,13 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
                     <div className="flex items-center gap-2">
                       <button
                         onClick={markAllNotificationsRead}
-                        className="text-[11px] text-secondary hover:underline font-semibold"
+                        className="text-[11px] text-secondary hover:underline font-semibold cursor-pointer"
                       >
                         Mark all read
                       </button>
                       <button
                         onClick={clearNotifications}
-                        className="text-[11px] text-tertiary hover:text-on-surface"
+                        className="text-[11px] text-tertiary hover:text-on-surface cursor-pointer"
                       >
                         Clear
                       </button>
@@ -423,7 +482,7 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
                   setIsNotificationsOpen(false);
                   setIsAccountOpen(false);
                 }}
-                className="flex items-center gap-1 h-7 px-1.5 sm:px-2 text-white hover:text-primary-fixed text-label-sm font-label-sm transition-colors rounded hover:bg-white/10"
+                className="flex items-center gap-1 h-7 px-1.5 sm:px-2 text-white hover:text-primary-fixed text-label-sm font-label-sm transition-colors rounded hover:bg-white/10 cursor-pointer"
               >
                 <span className="material-symbols-outlined text-[16px]">public</span>
                 <span className="truncate max-w-[90px]">{currentRegion}</span>
@@ -448,7 +507,7 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
                         setCurrentRegion(r.name.split(" ")[0]);
                         setIsRegionOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-2 text-body-sm flex items-center justify-between hover:bg-surface-container transition-colors ${
+                      className={`w-full text-left px-3 py-2 text-body-sm flex items-center justify-between hover:bg-surface-container transition-colors cursor-pointer ${
                         currentRegion === r.name.split(" ")[0]
                           ? "bg-primary/10 font-bold text-primary"
                           : "text-on-surface"
@@ -477,7 +536,7 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
                   setIsNotificationsOpen(false);
                   setIsRegionOpen(false);
                 }}
-                className="flex items-center gap-1 h-7 px-1.5 sm:px-2 text-white hover:text-primary-fixed text-label-sm font-label-sm transition-colors rounded hover:bg-white/10"
+                className="flex items-center gap-1 h-7 px-1.5 sm:px-2 text-white hover:text-primary-fixed text-label-sm font-label-sm transition-colors rounded hover:bg-white/10 cursor-pointer"
               >
                 <span className="truncate max-w-[110px] hidden sm:inline">Engineering-Prod</span>
                 <span className="material-symbols-outlined text-[14px]">
@@ -518,7 +577,7 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
                         setIsAccountOpen(false);
                         setIsSettingsModalOpen(true);
                       }}
-                      className="w-full text-left px-4 py-2 text-body-sm text-on-surface hover:bg-surface-container transition-colors"
+                      className="w-full text-left px-4 py-2 text-body-sm text-on-surface hover:bg-surface-container transition-colors cursor-pointer"
                     >
                       Preferences
                     </button>
@@ -526,7 +585,7 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
                   <div className="border-t border-surface-container-high pt-1">
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-body-sm text-error hover:bg-red-500/10 font-bold transition-colors flex items-center gap-2"
+                      className="w-full text-left px-4 py-2 text-body-sm text-error hover:bg-red-500/10 font-bold transition-colors flex items-center gap-2 cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-[16px]">logout</span>
                       Sign Out
@@ -539,7 +598,7 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
             {/* Preferences Settings Gear */}
             <button
               onClick={() => setIsSettingsModalOpen(true)}
-              className="h-7 px-1.5 sm:px-2 flex items-center justify-center text-white hover:text-primary-fixed transition-colors rounded hover:bg-white/10"
+              className="h-7 px-1.5 sm:px-2 flex items-center justify-center text-white hover:text-primary-fixed transition-colors rounded hover:bg-white/10 cursor-pointer"
               title="Console Preferences"
               aria-label="Open Console Preferences"
             >
@@ -557,7 +616,7 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
                 onClick={handleLogout}
                 title="Sign out of AWS Console"
                 aria-label="Sign out"
-                className="text-white hover:text-[#ff9900] text-sm flex items-center p-1 rounded hover:bg-white/10 transition-colors"
+                className="text-white hover:text-[#ff9900] text-sm flex items-center p-1 rounded hover:bg-white/10 transition-colors cursor-pointer"
               >
                 <span className="material-symbols-outlined text-[18px]">logout</span>
               </button>
@@ -570,6 +629,14 @@ export default function Header({ isAuthPage = false }: { isAuthPage?: boolean })
       <ConsolePreferencesModal
         isOpen={isSettingsModalOpen}
         onClose={() => setIsSettingsModalOpen(false)}
+      />
+
+      {/* Install App Modal */}
+      <InstallAppModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
+        deferredPrompt={deferredPrompt}
+        onInstalled={() => setIsInstalled(true)}
       />
     </>
   );

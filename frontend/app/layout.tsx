@@ -15,12 +15,12 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "Route 53",
   },
   icons: {
-    icon: "/favicon.ico",
-    apple: "https://lh3.googleusercontent.com/aida/AEtjO1Wltdknruls2mSQuZWubw4cvL8g9GCz1ZmhQQtnXUQTApRngvBnixCie1IL_WjjqxL73fdD_UR-pXkR5CxlMDJBV7uMx5WjcYKe3-TLEsopFGIX6cG2jEz7PYxbHcQSpQDKPl9No31uFXSwLjwK8xuUxDkFmv8AhaPT40jokc8gIlyHuacmJRBggIgS-WvxSVISuaMkDCzYhonKAPK-7B3IVPXpdICDowvLpUZIT-aFVbsRuXEW36_5HnDE",
+    icon: "/favicon.png",
+    apple: "/apple-touch-icon.png",
   },
 };
 
@@ -32,6 +32,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="application-name" content="AWS Route 53" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Route 53" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#232f3e" />
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
           rel="stylesheet"
@@ -49,7 +57,9 @@ export default function RootLayout({
                 }
                 if ('serviceWorker' in navigator) {
                   window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js').catch(() => {});
+                    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function(err) {
+                      console.log('SW registration note:', err);
+                    });
                   });
                 }
               } catch (e) {}

@@ -1,22 +1,26 @@
 {
+  "id": "/",
   "name": "AWS Route 53 Management Console",
   "short_name": "Route 53",
   "description": "Scalable Cloud DNS and Domain Name Management Web Application",
   "start_url": "/hosted-zones",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#f2f4f4",
   "theme_color": "#232f3e",
   "orientation": "any",
   "icons": [
     {
-      "src": "https://lh3.googleusercontent.com/aida/AEtjO1Wltdknruls2mSQuZWubw4cvL8g9GCz1ZmhQQtnXUQTApRngvBnixCie1IL_WjjqxL73fdD_UR-pXkR5CxlMDJBV7uMx5WjcYKe3-TLEsopFGIX6cG2jEz7PYxbHcQSpQDKPl9No31uFXSwLjwK8xuUxDkFmv8AhaPT40jokc8gIlyHuacmJRBggIgS-WvxSVISuaMkDCzYhonKAPK-7B3IVPXpdICDowvLpUZIT-aFVbsRuXEW36_5HnDE",
+      "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "https://lh3.googleusercontent.com/aida/AEtjO1Wltdknruls2mSQuZWubw4cvL8g9GCz1ZmhQQtnXUQTApRngvBnixCie1IL_WjjqxL73fdD_UR-pXkR5CxlMDJBV7uMx5WjcYKe3-TLEsopFGIX6cG2jEz7PYxbHcQSpQDKPl9No31uFXSwLjwK8xuUxDkFmv8AhaPT40jokc8gIlyHuacmJRBggIgS-WvxSVISuaMkDCzYhonKAPK-7B3IVPXpdICDowvLpUZIT-aFVbsRuXEW36_5HnDE",
+      "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
