@@ -1,3 +1,9 @@
+import os
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database.database import engine, Base
@@ -9,9 +15,12 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="AWS Route53 Clone API")
 
 # Configure CORS
+origins_env = os.getenv("CORS_ORIGINS", "http://localhost:3000")
+allow_origins = [origin.strip() for origin in origins_env.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], # Next.js frontend
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
