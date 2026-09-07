@@ -18,3 +18,9 @@ class HostedZone(HostedZoneBase):
 
     class Config:
         from_attributes = True
+
+class BulkDeleteZonesRequest(BaseModel):
+    zone_ids: List[str]
+
+class BindImportRequest(BaseModel):
+    zone_content: str

@@ -36,7 +36,7 @@ export default function RecordTable({ records, selectedRecordIds, onSelectionCha
 
   return (
     <div className="overflow-x-auto w-full">
-      <table className="w-full text-left text-body-sm font-body-sm whitespace-nowrap">
+      <table className="w-full min-w-[850px] text-left text-body-sm font-body-sm whitespace-nowrap">
         <thead>
           <tr className="h-8 bg-surface-container text-tertiary text-[11px] font-bold uppercase tracking-wider select-none">
             <th className="w-10 px-3 text-center">

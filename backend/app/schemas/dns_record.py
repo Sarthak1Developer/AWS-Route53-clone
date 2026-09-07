@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class DNSRecordBase(BaseModel):
     record_name: str
@@ -16,3 +17,10 @@ class DNSRecord(DNSRecordBase):
 
     class Config:
         from_attributes = True
+
+class BulkDeleteRecordsRequest(BaseModel):
+    record_ids: List[str]
+
+class BulkUpdateTtlRequest(BaseModel):
+    record_ids: List[str]
+    ttl: int

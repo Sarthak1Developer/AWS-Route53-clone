@@ -36,8 +36,8 @@ export default function HostedZoneTable({ zones, selectedZoneIds, onSelectionCha
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left text-body-sm font-body-sm select-none border-collapse">
+    <div className="overflow-x-auto w-full">
+      <table className="w-full min-w-[720px] text-left text-body-sm font-body-sm select-none border-collapse">
         <thead className="bg-surface-container-low text-tertiary font-title-md text-label-md uppercase tracking-wider">
           <tr>
             <th className="w-10 px-space-md py-space-sm text-center">

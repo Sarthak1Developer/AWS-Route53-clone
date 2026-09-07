@@ -1,9 +1,39 @@
 @import "tailwindcss";
 
+:root {
+  --color-bg: #f2f4f4;
+  --color-surf: #ffffff;
+  --color-surf-container: #f2f4f4;
+  --color-surf-container-low: #f9f9f9;
+  --color-surf-container-lowest: #ffffff;
+  --color-surf-container-high: #e2e9f3;
+  --color-surf-container-highest: #dce3ee;
+  --color-on-surf: #252f3e;
+  --color-on-bg: #252f3e;
+  --color-tert: #4e5d6c;
+  --color-tert-container: #8a96a9;
+  --color-border-card: #e2e9f3;
+}
+
+html.dark {
+  --color-bg: #0d131f;
+  --color-surf: #161f2e;
+  --color-surf-container: #1b2637;
+  --color-surf-container-low: #131b28;
+  --color-surf-container-lowest: #161f2e;
+  --color-surf-container-high: #243248;
+  --color-surf-container-highest: #2d3e58;
+  --color-on-surf: #e2e8f0;
+  --color-on-bg: #f8fafc;
+  --color-tert: #94a3b8;
+  --color-tert-container: #64748b;
+  --color-border-card: #243248;
+}
+
 @theme {
   --color-on-primary-fixed: #321200;
-  --color-surface-container-high: #e2e9f3;
-  --color-background: #f2f4f4; /* Amazon Off-White / Light Gray */
+  --color-surface-container-high: var(--color-surf-container-high);
+  --color-background: var(--color-bg);
   --color-on-tertiary: #ffffff;
   --color-surface-dim: #d4dae5;
   --color-on-secondary-fixed-variant: #004788;
@@ -14,10 +44,10 @@
   --color-secondary-container: #509cff;
   --color-on-error: #ffffff;
   --color-on-primary-fixed-variant: #753400;
-  --color-surface: #ffffff;
-  --color-tertiary-container: #8a96a9;
+  --color-surface: var(--color-surf);
+  --color-tertiary-container: var(--color-tert-container);
   --color-primary-fixed-dim: #ffb68c;
-  --color-tertiary: #4e5d6c; /* Amazon Dark Gray */
+  --color-tertiary: var(--color-tert);
   --color-inverse-primary: #ffb68c;
   --color-on-secondary: #ffffff;
   --color-on-primary-container: #4e2000;
@@ -26,28 +56,28 @@
   --color-error-container: #ffdad6;
   --color-on-primary: #111111;
   --color-on-error-container: #93000a;
-  --color-primary-container: #ff9900; /* Amazon Orange */
+  --color-primary-container: #ff9900;
   --color-inverse-on-surface: #ebf1fc;
-  --color-secondary: #9e5df2; /* Amazon Category Purple */
+  --color-secondary: #9e5df2;
   --color-outline: #8b7264;
   --color-outline-variant: #dfc0b1;
   --color-on-tertiary-container: #232f3e;
   --color-tertiary-fixed: #d7e3f8;
   --color-on-tertiary-fixed-variant: #3c4758;
   --color-on-secondary-container: #003365;
-  --color-on-background: #252f3e; /* Deep Squid Ink */
+  --color-on-background: var(--color-on-bg);
   --color-error: #ba1a1a;
   --color-surface-bright: #ffffff;
-  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-lowest: var(--color-surf-container-lowest);
   --color-secondary-fixed: #d5e3ff;
-  --color-on-surface: #252f3e; /* Deep Squid Ink */
-  --color-surface-container-low: #f9f9f9;
+  --color-on-surface: var(--color-on-surf);
+  --color-surface-container-low: var(--color-surf-container-low);
   --color-inverse-surface: #2a3139;
-  --color-surface-container: #f2f4f4;
+  --color-surface-container: var(--color-surf-container);
   --color-tertiary-fixed-dim: #bbc7dc;
-  --color-primary: #ff9900; /* Amazon Orange */
+  --color-primary: #ff9900;
   --color-on-tertiary-fixed: #101c2b;
-  --color-surface-container-highest: #dce3ee;
+  --color-surface-container-highest: var(--color-surf-container-highest);
 
   --radius-DEFAULT: 0.125rem;
   --radius-lg: 0.25rem;
@@ -134,11 +164,23 @@
   body {
     overscroll-behavior: none;
     background-color: var(--color-background);
+    color: var(--color-on-surface);
   }
   main > :first-child { margin-top: 0 !important; }
   main > :last-child { margin-bottom: 0 !important; }
 }
 
 ::-webkit-scrollbar {
-  display: none;
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 150, 150, 0.5);
 }

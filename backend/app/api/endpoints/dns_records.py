@@ -5,7 +5,12 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.models.dns_record import DNSRecord
 from app.models.hosted_zone import HostedZone
-from app.schemas.dns_record import DNSRecord as DNSRecordSchema, DNSRecordCreate
+from app.schemas.dns_record import (
+    DNSRecord as DNSRecordSchema,
+    DNSRecordCreate,
+    BulkDeleteRecordsRequest,
+    BulkUpdateTtlRequest,
+)
 
 router = APIRouter()
 
@@ -16,6 +21,36 @@ def list_dns_records(zone_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Hosted zone not found")
     records = db.query(DNSRecord).filter(DNSRecord.zone_id == zone_id).all()
     return records
+
+@router.post("/{zone_id}/records/bulk-delete")
+def bulk_delete_dns_records(zone_id: str, req: BulkDeleteRecordsRequest, db: Session = Depends(get_db)):
+    zone = db.query(HostedZone).filter(HostedZone.id == zone_id).first()
+    if not zone:
+        raise HTTPException(status_code=404, detail="Hosted zone not found")
+    
+    deleted_count = 0
+    for rid in req.record_ids:
+        rec = db.query(DNSRecord).filter(DNSRecord.id == rid, DNSRecord.zone_id == zone_id).first()
+        if rec:
+            db.delete(rec)
+            deleted_count += 1
+    db.commit()
+    return {"ok": True, "deleted_count": deleted_count}
+
+@router.post("/{zone_id}/records/bulk-update-ttl")
+def bulk_update_records_ttl(zone_id: str, req: BulkUpdateTtlRequest, db: Session = Depends(get_db)):
+    zone = db.query(HostedZone).filter(HostedZone.id == zone_id).first()
+    if not zone:
+        raise HTTPException(status_code=404, detail="Hosted zone not found")
+    
+    updated_count = 0
+    for rid in req.record_ids:
+        rec = db.query(DNSRecord).filter(DNSRecord.id == rid, DNSRecord.zone_id == zone_id).first()
+        if rec:
+            rec.ttl = req.ttl
+            updated_count += 1
+    db.commit()
+    return {"ok": True, "updated_count": updated_count}
 
 @router.post("/{zone_id}/records", response_model=DNSRecordSchema)
 def create_dns_record(zone_id: str, record_in: DNSRecordCreate, db: Session = Depends(get_db)):
