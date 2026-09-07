@@ -8,11 +8,13 @@ from app.schemas.hosted_zone import HostedZone as HostedZoneSchema, HostedZoneCr
 
 router = APIRouter()
 
+@router.get("", response_model=List[HostedZoneSchema])
 @router.get("/", response_model=List[HostedZoneSchema])
 def list_hosted_zones(db: Session = Depends(get_db)):
     zones = db.query(HostedZone).all()
     return zones
 
+@router.post("", response_model=HostedZoneSchema)
 @router.post("/", response_model=HostedZoneSchema)
 def create_hosted_zone(zone_in: HostedZoneCreate, db: Session = Depends(get_db)):
     zone_id = str(uuid.uuid4())

@@ -29,7 +29,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f2f3f3] absolute inset-0 z-50">
+    <div className="w-full flex items-center justify-center py-6">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-sm border border-[#eaeded]">
         <div className="flex justify-center mb-6">
           <div className="text-2xl font-bold text-[#232f3e] flex items-center gap-2">

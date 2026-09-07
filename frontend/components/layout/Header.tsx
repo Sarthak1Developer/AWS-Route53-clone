@@ -1,6 +1,6 @@
 "use client";
 
-export default function Header() {
+export default function Header({ isAuthPage = false }: { isAuthPage?: boolean }) {
   const handleLogout = () => {
     document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     window.location.href = "/login";
@@ -19,7 +19,9 @@ export default function Header() {
           <span className="material-symbols-outlined text-[14px]">expand_more</span>
         </button>
       </div>
-      <div className="flex-1 max-w-2xl mx-space-lg">
+      {!isAuthPage && (
+        <>
+          <div className="flex-1 max-w-2xl mx-space-lg">
         <div className="relative flex items-center">
           <span className="material-symbols-outlined absolute left-space-sm text-tertiary-fixed-dim text-[16px]">search</span>
           <input className="w-full h-7 pl-8 pr-16 bg-on-tertiary-fixed text-white placeholder:text-tertiary text-body-sm font-body-sm rounded border border-tertiary focus:outline-none focus:border-secondary-container" placeholder="Search for services, features, blogs, docs, and more" type="text" />
@@ -48,11 +50,13 @@ export default function Header() {
         </button>
         <div className="ml-space-xs pl-space-xs border-l border-tertiary flex items-center gap-2">
           <img alt="Profile" className="w-6 h-6 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1X_EWa96jWAEQem-wkc928PX5IZ-sCmAGNmgQPcTgae4dRWCIzIds25b3pez3bnWg7Bx_7mmZVu3QENRttiYnbo4tktigMVyDGXKxvfgqcuN_zM4Zti2O9BA4PU2LidqUB6sqlh5vYnzDO-mKNLNxzXJgIBI_3E8MlTYbveh0FxN602HxVnB590luImZh5mGBGmSts-iURTUE_-zFywM4betKXkuln2Ta_6CRkcYcCvG-uVs8SAOEJnj4OY" />
-          <button onClick={handleLogout} className="text-white hover:text-[#ff9900] text-sm flex items-center">
+          <button onClick={handleLogout} title="Sign out" className="text-white hover:text-[#ff9900] text-sm flex items-center">
             <span className="material-symbols-outlined text-[18px]">logout</span>
           </button>
         </div>
       </div>
+        </>
+      )}
     </header>
   );
 }

@@ -1,0 +1,11 @@
+{
+  "name": "aws-route53-clone",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:backend": "cd backend && .\\venv\\Scripts\\uvicorn.exe app.main:app --reload --port 8000",
+    "dev:frontend": "cd frontend && npm run dev",
+    "start": "cmd /c start-dev.bat"
+  },
+  "description": "Full-stack AWS Route 53 Clone"
+}
