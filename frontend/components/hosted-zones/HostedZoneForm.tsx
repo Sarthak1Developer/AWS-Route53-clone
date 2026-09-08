@@ -23,26 +23,27 @@ export default function HostedZoneForm({ onClose, onSuccess, zone }: Props) {
   }, [zone]);
 
   const handleSubmit = async () => {
-    if (!domainName.trim()) return;
+    const cleanDomain = domainName.trim().replace(/\s+/g, "");
+    if (!cleanDomain) return;
     setLoading(true);
     try {
       if (isEdit && zone) {
         await updateHostedZone(zone.id, {
-          domain_name: domainName,
+          domain_name: cleanDomain,
           type,
-          comment,
+          comment: comment.trim(),
         });
       } else {
         await createHostedZone({
-          domain_name: domainName,
+          domain_name: cleanDomain,
           type,
-          comment,
+          comment: comment.trim(),
         });
       }
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert(isEdit ? "Failed to update hosted zone" : "Failed to create hosted zone");
+      alert(error?.message || (isEdit ? "Failed to update hosted zone" : "Failed to create hosted zone"));
     } finally {
       setLoading(false);
     }
